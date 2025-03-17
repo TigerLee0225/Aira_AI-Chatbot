@@ -36,13 +36,13 @@ fi
 
 # GitHub 리포지토리 클론
 cd /home/ubuntu
-GITHUB_TOKEN="put your own token"
-if [ -z "$GITHUB_TOKEN" ]; then
+#GITHUB_TOKEN="put your own token"
+#if [ -z "$GITHUB_TOKEN" ]; then
     echo "GitHub token not found. Exiting."
     exit 1
 fi
 
-git clone https://$GITHUB_TOKEN@github.com/ktb-goorm-jaksim3/Aria_ChatBot.git
+#git clone https://$GITHUB_TOKEN@github.com/ktb-goorm-jaksim3/Aria_ChatBot.git
 if [ $? -ne 0 ]; then
     echo "Failed to clone repository. Exiting."
     exit 1

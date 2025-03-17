@@ -58,8 +58,8 @@ fi
 
 # GitHub 리포지토리 클론
 cd /home/ubuntu
-GITHUB_TOKEN="put your own token"
-git clone https://$GITHUB_TOKEN@github.com/ktb-goorm-jaksim3/Aria_ChatBot.git || { echo "리포지토리 클론 실패. 종료"; exit 1; }
+#GITHUB_TOKEN="put your own token"
+#git clone https://$GITHUB_TOKEN@github.com/ktb-goorm-jaksim3/Aria_ChatBot.git || { echo "리포지토리 클론 실패. 종료"; exit 1; }
 cd /home/ubuntu/Aria_ChatBot || { echo "디렉토리 이동 실패. 종료"; exit 1; }
 git checkout main || { echo "브랜치 전환 실패. 종료"; exit 1; }
 
