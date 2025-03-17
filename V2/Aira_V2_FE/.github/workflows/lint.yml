@@ -1,0 +1,27 @@
+name: Lint Code
+
+on:
+  push:
+    branches: [ "dev" ] # dev 브랜치에 푸시될 때 실행
+  pull_request:
+    branches: [ "main" ] # main 브랜치로 PR 생성 시 실행
+
+jobs:
+  lint:
+    name: Run ESLint
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run ESLint
+      run: npm run lint

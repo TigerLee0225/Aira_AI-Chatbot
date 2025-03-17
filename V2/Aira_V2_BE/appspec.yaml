@@ -1,0 +1,9 @@
+version: 0.0
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "placeholder"  # This value is replaced during deployment with the new task definition ARN.
+        LoadBalancerInfo:
+          ContainerName: "backend"      # Replace with the name of your container as defined in your task definition.
+          ContainerPort: 8000           # Replace with the port your container listens on.

@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 15s  # 15초마다 메트릭 수집
+
+rule_files:
+  - "alert.rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - "3.36.85.55:9093"  
+scrape_configs:
+  - job_name: 'FE'
+    metrics_path: /nginx_status
+    scheme: https
+    static_configs:
+      - targets: ['kopmorning.com:443']
+
+  - job_name: 'nginx'
+    metrics_path: /metrics
+      # scheme: https
+    static_configs:
+      - targets: ['3.36.85.55:9113']

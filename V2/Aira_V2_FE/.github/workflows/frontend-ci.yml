@@ -1,0 +1,60 @@
+name: Frontend CI (Vue.js)
+
+on:
+  push:
+    branches: [ "dev" ]  # dev 브랜치에서 푸시될 때 실행
+  pull_request:
+    branches: [ "main" ] # main 브랜치로 PR이 올라오면 실행
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  frontend-ci:
+    name: Frontend CI (Vue.js)
+    runs-on: ubuntu-latest  # GitHub이 제공하는 Ubuntu 서버에서 실행
+
+    steps:
+    - name: Checkout code  # GitHub에서 코드 다운로드
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js  # Node.js 설치 (Vue 실행 환경)
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'  # Node.js 18 버전 사용
+        cache: 'npm'
+
+    - name: Install dependencies  # npm 패키지 설치
+      run: |
+        npm install
+
+    - name: Run ESLint
+      run: npm run lint
+
+    - name: Run tests  # Vue 테스트 실행 (Jest or Vitest)
+      run: |
+        npm run test:unit
+
+    - name: Build Vue.js project  # Vue 프로젝트 빌드
+      run: |
+        npm run build
+
+    - name: Upload frontend artifact  # 빌드된 파일 저장
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-build
+        path: dist/
+
+    - name: Comment on Pull Request
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: "✅ Frontend CI 완료: Lint, 테스트, 빌드 성공!"
+          })

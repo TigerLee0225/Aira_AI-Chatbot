@@ -1,0 +1,52 @@
+groups:
+  - name: nginx-alerts
+    rules:
+      # 1️⃣ HTTP 500 오류 급증 감지
+      - alert: HighHTTP500Errors
+        expr: increase(nginx_http_responses_total{code="500"}[5m]) > 100
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "🚨 HTTP 500 Errors Detected!"
+          description: "최근 5분 동안 500 오류가 100회 이상 발생했습니다."
+
+      # 2️⃣ 요청 처리 시간이 2초 이상 초과
+      - alert: HighRequestLatency
+        expr: avg(nginx_http_requests_duration_seconds) > 2
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "⏳ High Request Latency"
+          description: "요청 처리 시간이 평균 2초 이상 걸리고 있습니다."
+
+      # 3️⃣ Nginx 활성 연결 급증 (트래픽 폭주 감지)
+      - alert: HighActiveConnections
+        expr: nginx_connections_active > 1000
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "🌐 High Active Connections"
+          description: "현재 활성화된 연결 수가 1000개 이상입니다."
+
+      # 4️⃣ 대기 연결 수 과다 (서버 과부하 위험)
+      - alert: HighWaitingConnections
+        expr: nginx_connections_waiting > 500
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "🚦 High Waiting Connections"
+          description: "대기 중인 연결 수가 500개를 초과했습니다."
+
+      # 5️⃣ HTTP 요청 수 급격한 감소 (서비스 장애 감지)
+      - alert: RequestDropDetected
+        expr: rate(nginx_http_requests_total[5m]) < 10
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "❌ Request Drop Detected"
+          description: "HTTP 요청 수가 비정상적으로 감소했습니다."

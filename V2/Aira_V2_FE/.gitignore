@@ -1,0 +1,54 @@
+# Dependency directories
+node_modules/
+bower_components/
+
+# Production build
+/dist/
+/build/
+
+# Environment variables
+.env
+
+# Vue.js specific files
+*.local
+*.env.local
+*.env.*.local
+
+# Cache files
+*.cache
+*.tmp
+
+# local env files
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+.idea/
+
+
+# System files
+Thumbs.db
+ehthumbs.db
+*.orig
+
+# Coverage files
+coverage/
+*.lcov
+
+# Git-related files
+*.lock

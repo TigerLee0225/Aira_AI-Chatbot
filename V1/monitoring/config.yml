@@ -1,0 +1,132 @@
+region: ap-northeast-2  # AWS 리전
+metrics:
+  # ALB 관련 메트릭
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: RequestCount
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer: [app/Aira-FE-ALB/2e48d60b6162a408]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: HTTPCode_Target_2XX_Count
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer: [app/Aira-FE-ALB/2e48d60b6162a408]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: HTTPCode_Target_3XX_Count
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer: [app/Aira-FE-ALB/2e48d60b6162a408]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: HTTPCode_Target_4XX_Count
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer: [app/Aira-FE-ALB/2e48d60b6162a408]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: HTTPCode_Target_5XX_Count
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer: [app/Aira-FE-ALB/2e48d60b6162a408]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: TargetResponseTime
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer: [app/Aira-FE-ALB/2e48d60b6162a408]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: HealthyHostCount
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer: [app/Aira-FE-ALB/2e48d60b6162a408]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: UnHealthyHostCount
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer: [app/Aira-FE-ALB/2e48d60b6162a408]
+    period_seconds: 60
+    range_seconds: 600
+
+  # AutoScaling 관련 메트릭
+  - aws_namespace: AWS/AutoScaling
+    aws_metric_name: GroupDesiredCapacity
+    aws_dimensions: [AutoScalingGroupName]
+    aws_dimension_select:
+      AutoScalingGroupName: [Aira-FE-Autoscaling]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/AutoScaling
+    aws_metric_name: GroupMaxSize
+    aws_dimensions: [AutoScalingGroupName]
+    aws_dimension_select:
+      AutoScalingGroupName: [Aira-FE-Autoscaling]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/AutoScaling
+    aws_metric_name: GroupMinSize
+    aws_dimensions: [AutoScalingGroupName]
+    aws_dimension_select:
+      AutoScalingGroupName: [Aira-FE-Autoscaling]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/AutoScaling
+    aws_metric_name: GroupInServiceCapacity
+    aws_dimensions: [AutoScalingGroupName]
+    aws_dimension_select:
+      AutoScalingGroupName: [Aira-FE-Autoscaling]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/AutoScaling
+    aws_metric_name: GroupPendingInstances
+    aws_dimensions: [AutoScalingGroupName]
+    aws_dimension_select:
+      AutoScalingGroupName: [Aira-FE-Autoscaling]
+    period_seconds: 60
+    range_seconds: 600
+
+  - aws_namespace: AWS/AutoScaling
+    aws_metric_name: GroupTerminatingInstances
+    aws_dimensions: [AutoScalingGroupName]
+    aws_dimension_select:
+      AutoScalingGroupName: [Aira-FE-Autoscaling]
+    period_seconds: 60
+    range_seconds: 600
+
+  # AutoScaling 관련 메트릭
+  - aws_namespace: AWS/AutoScaling
+    aws_metric_name: GroupInServiceInstances
+    aws_dimensions: [AutoScalingGroupName]
+    aws_dimension_select:
+      AutoScalingGroupName: [Aira-FE-Autoscaling]
+    period_seconds: 60
+    range_seconds: 600
+
+  # EC2 관련 메트릭
+  - aws_namespace: AWS/EC2
+    aws_metric_name: CPUUtilization
+    aws_dimensions: [InstanceId]
+    period_seconds: 60
+    range_seconds: 600
+    statistics: [Average]

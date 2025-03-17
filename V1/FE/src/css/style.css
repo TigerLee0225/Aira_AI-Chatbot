@@ -1,0 +1,111 @@
+/* 전체 레이아웃 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard', Arial, sans-serif;
+    background: linear-gradient(180deg, #CCCCCC 0%, #B7B7B7 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden; /* 페이지 자체의 스크롤을 숨김 */
+}
+
+/* 중앙 이미지 */
+.center-image {
+    margin-top: 10px; /* 위쪽 여백 최소화 */
+    text-align: center;
+}
+
+.center-image img {
+    width: 30%; /* 사진 크기 30%로 축소 */
+    height: auto;
+    object-fit: cover;
+    border: none; /* 사진 구분선 제거 */
+    box-shadow: none; /* 그림자 제거 */
+}
+
+/* 채팅창 */
+#chat-window {
+    width: 90%; /* 전체 채팅창 너비 */
+    max-width: 500px; /* 최대 너비 제한 */
+    margin-top: 10px; /* 사진과의 간격 최소화 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    height: 65%; /* 채팅창 높이 고정 */
+    overflow: hidden; /* 내부 스크롤 활성화를 위해 숨김 */
+    background: transparent;
+}
+
+/* 채팅 출력 */
+#chat-output {
+    width: 100%; /* 채팅 출력란의 너비 */
+    height: 90%; /* 채팅 출력 영역이 채팅창의 대부분을 차지 */
+    overflow-y: auto; /* 세로 스크롤 활성화 */
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    line-height: 1.5;
+    background: transparent; /* 투명 배경 */
+    border: none; /* 구분선 제거 */
+    box-sizing: border-box; /* 패딩 포함 높이 계산 */
+}
+
+/* 채팅 메시지 스타일 */
+.chat-message {
+    max-width: 90%; /* 채팅 메시지 길이를 입력창과 동일하게 설정 */
+    padding: 10px;
+    margin: 5px 0;
+    line-height: 1.5;
+    font-size: 16px;
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* 흰색 효과 추가 */
+}
+
+/* 사용자가 입력한 메시지 (오른쪽 정렬) */
+.chat-message.user {
+    align-self: flex-end;
+    text-align: right;
+}
+
+/* GPT 응답 메시지 (왼쪽 정렬) */
+.chat-message.gpt {
+    align-self: flex-start;
+    text-align: left;
+}
+
+/* 입력창 */
+#chat-input-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0; /* 상하 여백 */
+    margin-top: 20px; /* 채팅 입력란과 스크롤 영역 사이 간격 추가 */
+    margin-bottom: 100px; /* 바닥과의 간격 추가 */
+}
+
+#user-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    background: transparent; /* 투명 배경 */
+    border: none; /* 구분선 제거 */
+    border-bottom: 1px solid white; /* 아래쪽 선만 추가 */
+    outline: none;
+}
+
+#send-btn {
+    background: transparent;
+    color: white;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+}
+
+#send-btn:hover {
+    color: #ccc;
+}

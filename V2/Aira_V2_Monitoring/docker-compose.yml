@@ -1,0 +1,67 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=jaksim1234
+    networks:
+      - monitoring
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx-exporter
+    command:
+      - "--nginx.scrape-uri=https://kopmorning.com/nginx_status"
+        #  - "--nginx.scrape-uri.insecure-skip-verify=true"
+    ports:
+      - "9113:9113"
+    networks:
+      - monitoring
+   
+  alertmanager:
+    image: prom/alertmanager
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    ports:
+      - "9093:9093"
+    networks:
+      - monitoring
+
+  master:
+    image: locustio/locust
+    container_name: locust-master
+    ports:
+      - "8089:8089"  # 웹 인터페이스 포트
+    networks:
+      - monitoring
+    volumes:
+      - ./locust:/mnt/locust  # Locust 스크립트 마운트
+    environment:
+      - LOCUST_HOST=https://kopmorning.com
+    command: -f /mnt/locust/locustfile.py --master
+
+  worker:
+    image: locustio/locust
+    networks:
+      - monitoring
+    volumes:
+      - ./locust:/mnt/locust  # Locust 스크립트 마운트
+    environment:
+      - LOCUST_HOST=https://kopmorning.com
+    command: -f /mnt/locust/locustfile.py --worker --master-host master
+
+
+networks:
+  monitoring:
+    external: true

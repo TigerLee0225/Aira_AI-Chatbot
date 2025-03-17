@@ -1,0 +1,25 @@
+global:
+  resolve_timeout: 5m  # 알림 해제 시점 설정 (해제까지 대기 시간)
+
+route:
+  receiver: "discord-notifications"  # 기본 수신처 (Discord 알림)
+  group_wait: 10s  # 그룹화 대기 시간
+  group_interval: 1m  # 그룹화 후 간격
+  repeat_interval: 1h  # 반복 알림 간격
+  group_by: ["alertname"]  # 알림 그룹화 기준
+
+receivers:
+  - name: "discord-notifications"
+    discord_configs:
+      - webhook_url: "https://discord.com/api/webhooks/1341296426725933067/7jmtNg-zbFtbBpkDs9xEykD2PQou-vVHUN_CmGmIIyzyVsB01XnoyZSBi0iuICn89J6M"  # Discord Webhook URL
+        send_resolved: true  # 알림 해제 시에도 알림 전송
+        username: "AlertManager"  # 알림 발송자 이름
+        avatar_url: "https://avatars3.githubusercontent.com/u/3380462"  # 발송자 아이콘
+        message: |
+          **Alert:** {{ .CommonLabels.alertname }}
+          **Severity:** {{ .CommonLabels.severity }}
+          **Description:** {{ .CommonAnnotations.description }}
+          **Time:** {{ .StartsAt }}
+          {{ if .Alerts.Firing }}
+            Firing: {{ .Alerts.Firing }}
+          {{ end }}

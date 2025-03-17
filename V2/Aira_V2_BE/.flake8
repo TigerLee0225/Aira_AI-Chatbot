@@ -1,0 +1,17 @@
+[flake8]
+# ❌ 검사에서 제외할 폴더
+exclude =
+    .venv,  # 로컬 가상환경 폴더 제외
+    venv,  # CI/CD 가상환경 폴더 제외
+    __pycache__,  # Python 캐시 파일 제외
+    migrations,  # Django 등 마이그레이션 폴더 제외
+    tests,  # 테스트 코드 제외 가능
+
+# 🔍 검사할 최대 줄 길이
+max-line-length = 100
+
+# 🚨 보고할 에러 코드 목록 (E9: 문법 오류, F63/F7/F82: 치명적 오류)
+select = E9,F63,F7,F82
+
+# ⏳ 실행 속도를 빠르게 하기 위해 병렬 실행
+jobs = 4

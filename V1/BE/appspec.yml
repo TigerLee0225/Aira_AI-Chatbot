@@ -1,0 +1,7 @@
+version: 0.0
+os: linux
+
+hooks:
+  AfterInstall:
+    - location: BE-Script.sh
+      runas: root

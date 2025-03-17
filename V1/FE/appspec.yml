@@ -1,0 +1,7 @@
+version: 0.0
+os: linux
+
+hooks:
+  AfterInstall:
+    - location: FE-Script.sh
+      runas: root

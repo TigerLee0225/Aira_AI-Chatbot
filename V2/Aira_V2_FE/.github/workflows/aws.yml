@@ -1,0 +1,94 @@
+name: Deploy to Amazon ECS
+
+# on:
+#   push:
+#     branches:
+#       - Issue/Feature/#30
+#   workflow_dispatch:
+
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'  # 문서 파일 변경은 워크플로우 트리거 제외
+
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY: aira/fe
+  ECS_SERVICE: frontend-service
+  ECS_CLUSTER: Aira
+  ECS_TASK_DEFINITION: .aws/task_definition.json
+  CONTAINER_NAME: frontend
+  IMAGE_TAG: latest  # 항상 'latest' 태그로 설정
+  PLATFORM: linux/arm64
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        set -e
+
+        # Log in to Amazon ECR in the ap-northeast-2 region
+        # aws ecr get-login-password --region ap-northeast-2 | \
+        # docker login --username AWS --password-stdin 730335258114.dkr.ecr.ap-northeast-2.amazonaws.com
+
+        # Create (or reuse) a Buildx builder instance
+        docker buildx create --use || true
+
+        #  Build the FE image for both linux/amd64 and linux/arm64 and push directly to ECR.
+        # This tags the image locally as "aira-fe:latest" and with the full ECR URI.
+
+        docker buildx build \
+          --platform linux/amd64,linux/arm64 \
+          -t 730335258114.dkr.ecr.ap-northeast-2.amazonaws.com/aira/fe:latest \
+          --push .
+
+        # Export 'latest' image reference
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
+        
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true
