@@ -36,7 +36,7 @@ fi
 
 # GitHub 리포지토리 클론
 cd /home/ubuntu
-GITHUB_TOKEN="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"
+GITHUB_TOKEN="put your own token"
 if [ -z "$GITHUB_TOKEN" ]; then
     echo "GitHub token not found. Exiting."
     exit 1
