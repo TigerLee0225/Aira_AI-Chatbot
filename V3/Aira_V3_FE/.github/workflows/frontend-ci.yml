@@ -1,0 +1,56 @@
+name: Frontend CI (JavaScript/TypeScript)
+
+on:
+  push:
+    branches: [ "dev_production" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  frontend-ci:
+    name: Frontend CI
+    runs-on: ubuntu-latest # GitHub이 제공하는 Ubuntu 서버에서 실행
+
+    steps:
+      - name: Checkout code # GitHub에서 코드 다운로드
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js # Node.js 설치 (Vue 실행 환경)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies # npm 패키지 설치
+        run: npm install
+
+      - name: Run ESLint # Lint 테스트 진행
+        run: npm run lint
+
+      - name: Run Jest tests with coverage # 커버리지 테스트 진행
+        run: npm test -- --coverage
+
+      - name: Upload frontend test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: coverage
+
+      - name: Comment on Pull Request (Frontend CI)
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "✅ Frontend CI 완료: Lint, 테스트, 빌드 성공!"
+            }).catch(err => {
+              console.log("Error adding comment: ", err);
+            });

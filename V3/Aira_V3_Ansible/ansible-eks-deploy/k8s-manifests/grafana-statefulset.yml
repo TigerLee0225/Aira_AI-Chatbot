@@ -1,0 +1,47 @@
+# 📌 Grafana 웹 UI 확인
+# kubectl get svc -n monitoring → EXTERNAL-IP 확인 후 http://<EXTERNAL-IP> 접속
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        fsGroup: 472  # 볼륨을 grafana 그룹이 접근 가능하도록 변경
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: private-node-group
+        topology.kubernetes.io/zone: ap-northeast-2a  # 특정 AZ 지정
+      initContainers:
+        - name: init-chown-data
+          image: busybox
+          command: ["sh", "-c", "chown -R 472:472 /grafana && chmod -R 775 /grafana"]
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /grafana
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: admin-password
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc

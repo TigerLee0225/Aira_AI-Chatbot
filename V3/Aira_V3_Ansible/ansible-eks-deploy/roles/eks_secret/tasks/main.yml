@@ -1,0 +1,9 @@
+---
+- name: Apply Kubernetes Secrets
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ item }}"
+  loop:
+    - "{{ manifest_dir }}/grafana-secret.yml"
+    - "{{ manifest_dir }}/mysql-secret.yml"
+    - "{{ manifest_dir }}/argocd-secret.yml"

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-server
+  namespace: argocd
+  labels:
+    app: argocd-server
+spec:
+  replicas: 1
+  # spec.selector 필드를 제거하여 immutable 필드 패치를 피합니다.
+  template:
+    metadata:
+      labels:
+        #app: argocd-server
+        app.kubernetes.io/name: argocd-server
+    spec:
+      serviceAccountName: argocd-admin
+      containers:
+        - name: argocd-server
+          image: quay.io/argoproj/argocd:v2.8.0
+          command: ["/usr/local/bin/argocd-server"]
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ARGOCD_SERVER_INSECURE
+              value: "true"
+          volumeMounts:
+            - name: argocd-config
+              mountPath: /app/config
+            - name: argocd-secret
+              mountPath: /app/secret
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: argocd-config
+          configMap:
+            name: argocd-cm
+        - name: argocd-secret
+          secret:
+            secretName: argocd-secret

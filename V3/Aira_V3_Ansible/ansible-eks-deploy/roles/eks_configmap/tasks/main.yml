@@ -1,0 +1,5 @@
+---
+- name: Apply Kubernetes ConfigMaps
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ manifest_dir }}/prometheus-config.yml"

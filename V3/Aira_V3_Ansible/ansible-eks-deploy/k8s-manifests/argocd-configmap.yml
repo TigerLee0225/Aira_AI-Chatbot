@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  application.instanceLabelKey: argocd.argoproj.io/instance
+  admin.enabled: "true"
+  users.anonymous.enabled: "false"
+  server.insecure: "true"
+  timeout.reconciliation: "180s"

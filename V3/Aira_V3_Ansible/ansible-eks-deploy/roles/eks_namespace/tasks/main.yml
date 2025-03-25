@@ -1,0 +1,5 @@
+---
+- name: Apply Kubernetes Namespace manifests
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ manifest_dir }}/argocd-namespace.yml"

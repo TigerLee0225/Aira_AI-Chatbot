@@ -1,0 +1,86 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: application
+data:
+  # 프론트엔드 설정
+  VUE_APP_API_BASE_URL: "https://kopmorning.com"
+  
+  # 백엔드의 비민감 설정
+  MYSQL_DATABASE: "Aira"
+  ALGORITHM: "HS256"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+  GPT_WORKER_URL: "http://gpt-worker:9000/generate/"
+  
+  # GPT Worker의 비민감 설정
+  AWS_REGION: "ap-northeast-2"
+  REQUEST_QUEUE_URL: "https://sqs.ap-northeast-3.amazonaws.com/730335258114/Aira-cluster-gpt-request-queue.fifo"
+  RESPONSE_QUEUE_URL: "https://sqs.ap-northeast-2.amazonaws.com/730335258114/Aira-cluster-gpt-response-queue.fifo"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: application
+data:
+  nginx.conf: |-
+    worker_processes  1;
+
+    events {
+        worker_connections  1024;
+    }
+
+    http {
+        include       mime.types;
+        default_type  application/octet-stream;
+        sendfile      on;
+        keepalive_timeout  65;
+
+        server {
+            listen       80;
+            server_name  $host;
+
+            # 응답 헤더 (항상 적용)
+            add_header X-Content-Type-Options "nosniff" always;
+            add_header Cache-Control "public, max-age=3600" always;
+
+            # CSP 설정: upgrade-insecure-requests
+            add_header Content-Security-Policy "upgrade-insecure-requests" always;
+
+            # 정적 파일 제공 (root 경로에 실제 파일들이 존재하는지 확인)
+            root   /usr/share/nginx/html;
+            index  index.html;
+
+            # favicon 요청에 대한 간단한 처리 (파일이 없으면 빈 204 응답)
+            location = /favicon.ico {
+                empty_gif;
+                access_log off;
+                log_not_found off;
+            }
+
+            # Nginx 상태 정보 (내부 모니터링)
+            location /nginx_status {
+                stub_status;
+                allow all;
+            }
+
+            # Reverse proxy: 백엔드 API 요청 프록시
+            location ~ ^/(auth|generate|health|load|questions)/ {
+                proxy_pass http://backend:8000;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # 기타 모든 요청: SPA fallback
+            location / {
+                try_files $uri $uri/ /index.html;
+            }
+        }
+    }

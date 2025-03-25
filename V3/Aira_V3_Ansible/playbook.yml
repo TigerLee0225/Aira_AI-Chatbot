@@ -1,0 +1,61 @@
+- name: Create EKS Cluster and Node Groups
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+    # EKS 클러스터 생성
+    - name: Create EKS Cluster
+      command: >
+        eksctl create cluster
+        --name my-cluster
+        --region ap-northeast-2
+        --version 1.27
+        --node-private-networking
+        --vpc-private-subnets=subnet-06b4603cb89a30b1f,subnet-00fc52b5189371e70
+        --vpc-public-subnets=subnet-005b9f963c1ff689d,subnet-056c80d61087ecb10
+        --without-nodegroup
+      register: eks_cluster
+      changed_when: "'already exists' not in eks_cluster.stdout"
+
+    # Public 노드 그룹 생성
+    - name: Create Public Node Group
+      command: >
+        eksctl create nodegroup
+        --cluster my-cluster
+        --name public-nodegroup
+        --node-type t3.medium
+        --nodes 2
+        --nodes-min 1
+        --nodes-max 3
+        --node-volume-size 20
+        --ssh-access
+        --ssh-public-key Aira-Key
+        --managed
+        --region ap-northeast-2
+        --subnet-ids subnet-005b9f963c1ff689d,subnet-056c80d61087ecb10
+      register: public_nodegroup
+      changed_when: "'already exists' not in public_nodegroup.stdout"
+
+    # Private 노드 그룹 생성
+    - name: Create Private Node Group
+      command: >
+        eksctl create nodegroup
+        --cluster my-cluster
+        --name private-nodegroup
+        --node-type t3.medium
+        --nodes 2
+        --nodes-min 1
+        --nodes-max 3
+        --node-volume-size 20
+        --ssh-access
+        --ssh-public-key Aira-Key
+        --managed
+        --region ap-northeast-2
+        --subnet-ids subnet-06b4603cb89a30b1f,subnet-00fc52b5189371e70
+      register: private_nodegroup
+      changed_when: "'already exists' not in private_nodegroup.stdout"
+
+    # 생성된 클러스터 정보 출력
+    - name: Show EKS Cluster Info
+      debug:
+        msg: "EKS Cluster and Node Groups have been created successfully!"

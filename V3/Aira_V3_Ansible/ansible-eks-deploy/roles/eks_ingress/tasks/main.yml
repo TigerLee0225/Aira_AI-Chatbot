@@ -1,0 +1,8 @@
+---
+- name: Apply Kubernetes Ingresses
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ item }}"
+  loop:
+    - "{{ manifest_dir }}/grafana-ingress.yml"
+    - "{{ manifest_dir }}/argocd-ingress.yml"

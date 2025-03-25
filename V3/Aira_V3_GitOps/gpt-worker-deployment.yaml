@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpt-worker
+  namespace: application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gpt-worker
+  template:
+    metadata:
+      labels:
+        app: gpt-worker
+    spec:
+      containers:
+      - name: gpt-worker
+        image: 730335258114.dkr.ecr.ap-northeast-2.amazonaws.com/aira/gpt_worker:latest
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+        ports:
+        - containerPort: 8080
+        env:
+        # 비민감 설정: ConfigMap에서 주입
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: AWS_REGION
+        - name: REQUEST_QUEUE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: REQUEST_QUEUE_URL
+        - name: RESPONSE_QUEUE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: RESPONSE_QUEUE_URL
+        # 민감 정보: Secret에서 주입
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: OPENAI_API_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpt-worker
+  namespace: application
+spec:
+  #로드밸런싱은 kube-proxy로 실행
+  type: ClusterIP
+  selector:
+    app: gpt-worker
+  ports:
+  - name: http
+    protocol: TCP
+    port: 9000
+    targetPort: 9000
+---
+#Horizontal Pod Autoscaler. CPU, 메모리 등 메트릭 기반 스케일 인/아웃
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gpt-worker-hpa
+  namespace: application
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: gpt-worker
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50

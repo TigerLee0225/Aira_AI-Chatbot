@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-metadata-access
+  namespace: database  # 네임스페이스는 database로 지정
+spec:
+  podSelector:
+    matchLabels:
+      role: metadata-accessor  # 특정 역할을 가진 파드만 IMDS 접근 허용
+      app: ebs-csi-controller
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 169.254.169.254/32  # IMDS 서버 IP

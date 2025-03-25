@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s  # 수집 주기
+
+    scrape_configs:
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+
+      - job_name: 'node-exporter'
+        static_configs:
+          - targets:
+              - node-exporter-bsnhh:9100
+              - node-exporter-hvz26:9100
+              - node-exporter-knvlw:9100
+              - node-exporter-sm2mx:9100

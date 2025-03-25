@@ -1,0 +1,20 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+openai
+jinja2
+pydantic
+bcrypt==4.0.1
+passlib[bcrypt]==1.7.4
+itsdangerous==2.2.0
+python-jose[cryptography]
+sqlalchemy
+pydantic[email]
+# psycopg2-binary  # PostgreSQL 사용시에만 필요
+mysql-connector-python
+pymysql
+mysqlclient
+flake8 # 린트 도구
+pytest
+requests
+boto3

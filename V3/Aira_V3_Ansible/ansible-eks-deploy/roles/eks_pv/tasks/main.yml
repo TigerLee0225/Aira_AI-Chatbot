@@ -1,0 +1,10 @@
+---
+- name: Apply Kubernetes Persistent Volumes (PV)
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ item }}"
+  loop:
+    - "{{ manifest_dir }}/backup-pv.yml"
+    - "{{ manifest_dir }}/grafana-pv.yml"
+    - "{{ manifest_dir }}/mysql-pv.yml"
+    - "{{ manifest_dir }}/prometheus-pv.yml"

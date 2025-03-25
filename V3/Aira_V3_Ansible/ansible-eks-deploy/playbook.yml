@@ -1,0 +1,22 @@
+---
+- name: Deploy Kubernetes Resources
+  hosts: localhost
+  become: false
+  vars:
+    manifest_dir: "/home/ubuntu/Aira_V3_Ansible/ansible-eks-deploy/k8s-manifests"
+  tasks:
+    - name: Deploy Kubernetes Resources
+      include_role:
+        name: "{{ item }}"
+      loop:
+        - eks_namespace
+        - eks_pv
+        - eks_pvc
+        - eks_secret
+        - eks_service
+        - eks_ingress
+        - eks_deployment
+        - eks_statefulset
+        - eks_daemonset
+        - eks_configmap
+        - eks_rbac

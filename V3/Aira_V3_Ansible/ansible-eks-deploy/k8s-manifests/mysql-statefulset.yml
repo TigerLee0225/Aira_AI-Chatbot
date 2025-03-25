@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+      role: metadata-accessor
+  template:
+    metadata:
+      labels:
+        app: mysql
+        role: metadata-accessor
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: public-node-group
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: root-password
+            - name: MYSQL_DATABASE
+              value: "aira_db"
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+            - name: backup-storage
+              mountPath: /var/lib/mysql-backup  # 백업 스토리지 마운트 추가
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+        - name: backup-storage
+          persistentVolumeClaim:
+            claimName: backup-pvc  # 백업 PVC 연결

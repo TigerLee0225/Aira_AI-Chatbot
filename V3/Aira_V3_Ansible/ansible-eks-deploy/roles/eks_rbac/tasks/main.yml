@@ -1,0 +1,5 @@
+---
+- name: Apply Kubernetes RBAC roles
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ manifest_dir }}/argocd-rbac.yml"

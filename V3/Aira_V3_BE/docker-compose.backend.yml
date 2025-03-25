@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./BE/src/.env
+    volumes:
+      - ./BE/src:/app/src  # ✅ 정확한 경로로 수정
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - Aira_shared_local_network
+    command: sh -c "pytest /app/src/tests/ || true && uvicorn src.main:app --host 0.0.0.0 --port 8000"
+    
+
+  db:
+    image: mysql:8.0
+    restart: always
+    env_file: 
+      - ./BE/src/.env
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - Aira_shared_local_network
+
+volumes:
+  db_data:
+
+networks:
+  Aira_shared_local_network:
+    external: true
